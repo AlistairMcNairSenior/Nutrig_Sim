@@ -90,7 +90,8 @@ compromise_angleDros <- data.frame(ratio = leedt$Ratio,
                                    beta = calculate_Thales(leedt[c("carb_eaten", "protein_eaten")], leedt_intakeTarget),
                                    false_angle = calculate_Thales(leedt[c("carb_eaten", "protein_eaten")], leedt_intakeTarget_FALSE),
                                    total_intake = leedt$carb_eaten + leedt$protein_eaten,
-                                   vector = sqrt(leedt$carb_eaten^2 + leedt$protein_eaten^2))
+                                   P = leedt$protein_eaten,
+                                   C = leedt$carb_eaten)
 
 
 ### Testing statistically - original model
@@ -128,7 +129,10 @@ dev.off()
 
 # Do welch test for food group on the intake and vector from the origin
 library(onewaytests)
-closest_distance_test<-welch.test(vector ~ ratio, data=compromise_angleDros)
+
+# Note for the PC tests we must drop 0 - contents foods
+P_test<-welch.test(P ~ ratio, data=compromise_angleDros[-which(compromise_angleDros$P == 0),])
+C_test<-welch.test(C ~ ratio, data=compromise_angleDros[-which(compromise_angleDros$P == 0),])
 equal_distance_test<-welch.test(total_intake ~ ratio, data=compromise_angleDros)
 
 # Supplementary figure for other methods and n
